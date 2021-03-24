@@ -66,9 +66,12 @@ public class Imprimir extends javax.swing.JInternalFrame {
     }
 
     void cargarTablaClientesPlanes(String valor) {
-        Date fe = calen.getDate();
-        long fec = fe.getTime();
-        java.sql.Date fee = new java.sql.Date(fec);
+        Date jDI = fechaInicial.getDate();
+        long long_fechaI = jDI.getTime();
+        java.sql.Date fechaInicio = new java.sql.Date(long_fechaI);
+        Date jDF = fechaFinal.getDate();
+        long long_fechaF = jDF.getTime();
+        java.sql.Date fechafin = new java.sql.Date(long_fechaF);
         Color myColor = new Color(255, 255, 255);
         tablaClientesPlan.setBackground(myColor);
         tablaClientesPlan.getTableHeader().setBackground(new Color(0, 102, 204));
@@ -86,8 +89,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         Connection cn = cc.Conexion();
 
         try {
-            ps = cn.prepareStatement("SELECT * FROM ClientePlan WHERE FechaCompra=?");
-            ps.setDate(1, fee);
+            ps = cn.prepareStatement("SELECT * FROM ClientePlan WHERE FechaCompra BETWEEN '"+fechaInicio+"' and '"+fechafin+"'");           
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -110,9 +112,12 @@ public class Imprimir extends javax.swing.JInternalFrame {
     }
 
     void cargarTablaVentas(String valor) {
-        Date fe = calen.getDate();
-        long fec = fe.getTime();
-        java.sql.Date fee = new java.sql.Date(fec);
+        Date jDI = fechaInicial.getDate();
+        long long_fechaI = jDI.getTime();
+        java.sql.Date fechaInicio = new java.sql.Date(long_fechaI);
+        Date jDF = fechaFinal.getDate();
+        long long_fechaF = jDF.getTime();
+        java.sql.Date fechafin = new java.sql.Date(long_fechaF);
         Color myColor = new Color(255, 255, 255);
         tablaVentas.setBackground(myColor);
         tablaVentas.getTableHeader().setBackground(new Color(0, 102, 204));
@@ -130,8 +135,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         Connection cn = cc.Conexion();
 
         try {
-            ps = cn.prepareStatement("SELECT * FROM Ventas WHERE FechaVenta=?");
-            ps.setDate(1, fee);
+            ps = cn.prepareStatement("SELECT * FROM Ventas WHERE FechaVenta BETWEEN '"+fechaInicio+"' and '"+fechafin+"'");
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -153,7 +157,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
     }
 
     public void crearPDFVentas() throws IOException, DocumentException {
-        Date fe = calen.getDate();
+        Date fe = fechaInicial.getDate();
         long fec = fe.getTime();
         java.sql.Date fee = new java.sql.Date(fec);
         try {
@@ -297,13 +301,14 @@ public class Imprimir extends javax.swing.JInternalFrame {
         tablaVentas = new javax.swing.JTable();
         txtTotal = new javax.swing.JTextField();
         jLabel3 = new javax.swing.JLabel();
-        calen = new com.toedter.calendar.JDateChooser();
+        fechaInicial = new com.toedter.calendar.JDateChooser();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaClientesPlan = new javax.swing.JTable();
         cerrar = new javax.swing.JLabel();
         btnVen = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
+        fechaFinal = new com.toedter.calendar.JDateChooser();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -393,10 +398,10 @@ public class Imprimir extends javax.swing.JInternalFrame {
         jLabel3.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
         jLabel3.setText("Total de ventas:");
 
-        calen.setForeground(new java.awt.Color(0, 102, 204));
-        calen.setToolTipText("");
-        calen.setDateFormatString("yyyy-MM-dd");
-        calen.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
+        fechaInicial.setForeground(new java.awt.Color(0, 102, 204));
+        fechaInicial.setToolTipText("");
+        fechaInicial.setDateFormatString("yyyy-MM-dd");
+        fechaInicial.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
 
         tablaClientesPlan.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
         tablaClientesPlan.setForeground(new java.awt.Color(0, 153, 255));
@@ -464,6 +469,11 @@ public class Imprimir extends javax.swing.JInternalFrame {
         jLabel2.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         jLabel2.setText("Imprimir Ventas");
 
+        fechaFinal.setForeground(new java.awt.Color(0, 102, 204));
+        fechaFinal.setToolTipText("");
+        fechaFinal.setDateFormatString("yyyy-MM-dd");
+        fechaFinal.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -473,14 +483,8 @@ public class Imprimir extends javax.swing.JInternalFrame {
                 .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(cerrar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(calen, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addContainerGap())))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 685, Short.MAX_VALUE)
+                        .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(279, 279, 279)
                         .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -498,25 +502,35 @@ public class Imprimir extends javax.swing.JInternalFrame {
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
                     .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
                 .addContainerGap())
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(fechaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(27, 27, 27))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(45, 45, 45))
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jLabel2)
-                        .addGap(43, 43, 43)
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                                .addGap(2, 2, 2)
-                                .addComponent(calen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(45, 45, 45)))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                                .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                                    .addGap(2, 2, 2)
+                                    .addComponent(fechaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)))
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -526,7 +540,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
                         .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addComponent(jLabel3))
                     .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(48, Short.MAX_VALUE))
+                .addContainerGap(52, Short.MAX_VALUE))
         );
 
         pack();
@@ -614,8 +628,9 @@ public class Imprimir extends javax.swing.JInternalFrame {
     private javax.swing.JPanel btnBuscar;
     private javax.swing.JPanel btnImprimir;
     private javax.swing.JPanel btnVen;
-    private com.toedter.calendar.JDateChooser calen;
     public static javax.swing.JLabel cerrar;
+    private com.toedter.calendar.JDateChooser fechaFinal;
+    private com.toedter.calendar.JDateChooser fechaInicial;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
