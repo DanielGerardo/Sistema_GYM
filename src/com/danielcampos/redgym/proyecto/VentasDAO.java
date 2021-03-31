@@ -79,7 +79,7 @@ public class VentasDAO {
     }
     public int GuardarDetalleVentas(DetalleVentas dv){
         
-        String sql="INSERT INTO VentasDetalle(Id_Venta,Id_Producto,Unidad,Cantidad,PrecioVenta) Values (?,?,?,?,?)";
+        String sql="INSERT INTO VentasDetalle(Id_Venta,Id_Producto,Unidad,Cantidad,PrecioVenta,FechaVenta) Values (?,?,?,?,?,GETDATE())";
         try {
             con=cn.Conexion();
             ps=con.prepareStatement(sql);
@@ -88,8 +88,9 @@ public class VentasDAO {
             ps.setString(3, dv.getUnidad());
             ps.setInt(4, dv.getCantidad());
             ps.setDouble(5, dv.getPreventa());
-            ps.executeUpdate();
+            r=ps.executeUpdate();
         } catch (Exception e){
+            System.out.println(""+e);
         }
         return r;
     }

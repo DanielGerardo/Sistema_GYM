@@ -39,17 +39,25 @@ import javax.swing.table.DefaultTableModel;
 import static com.danielcampos.redgym.proyecto.Menu.PanelGuardar;
 import static com.danielcampos.redgym.proyecto.Menu.IconGuardar;
 import static com.danielcampos.redgym.proyecto.Menu.PanelControl;
+import com.toedter.calendar.JCalendar;
+import com.toedter.calendar.JDateChooser;
+import javax.swing.JFrame;
+import org.jfree.chart.ChartFactory;
+import org.jfree.chart.ChartPanel;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.data.category.DefaultCategoryDataset;
 
 /**
  *
- * @author Daniel Gerardo Campos García
- * Class JInternalFrame Imprimir se crea para visualizar las ventas de las fechas ingresadas y se crea un PDF de las ventas
- * Variables: Excritura de camello abreviando su tipo de componente seguido de su nombre de variable
- * Metodos: Exritura de camello (El nombre debe se ser sacado de la funcion que tiene el metodo)
- * 
- * 
+ * @author Daniel Gerardo Campos García Class JInternalFrame Imprimir se crea
+ * para visualizar las ventas de las fechas ingresadas y se crea un PDF de las
+ * ventas Variables: Excritura de camello abreviando su tipo de componente
+ * seguido de su nombre de variable Metodos: Exritura de camello (El nombre debe
+ * se ser sacado de la funcion que tiene el metodo)
+ *
  */
-public class Imprimir extends javax.swing.JInternalFrame {
+public class Imprimir extends javax.swing.JInternalFrame implements MetodosGraficar {
 
     DefaultTableModel model;
     double suma;
@@ -65,7 +73,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         ((javax.swing.plaf.basic.BasicInternalFrameUI) this.getUI()).setNorthPane(null);
     }
 
-    void cargarTablaClientesPlanes(String valor) {
+    void cargarTablaClientesPlanes() {
         Date jDI = fechaInicial.getDate();
         long long_fechaI = jDI.getTime();
         java.sql.Date fechaInicio = new java.sql.Date(long_fechaI);
@@ -89,7 +97,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         Connection cn = cc.Conexion();
 
         try {
-            ps = cn.prepareStatement("SELECT * FROM ClientePlan WHERE FechaCompra BETWEEN '"+fechaInicio+"' and '"+fechafin+"'");           
+            ps = cn.prepareStatement("SELECT * FROM ClientePlan WHERE FechaCompra BETWEEN '" + fechaInicio + "' and '" + fechafin + "'");
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -111,7 +119,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
 
     }
 
-    void cargarTablaVentas(String valor) {
+    void cargarTablaVentas() {
         Date jDI = fechaInicial.getDate();
         long long_fechaI = jDI.getTime();
         java.sql.Date fechaInicio = new java.sql.Date(long_fechaI);
@@ -135,7 +143,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         Connection cn = cc.Conexion();
 
         try {
-            ps = cn.prepareStatement("SELECT * FROM Ventas WHERE FechaVenta BETWEEN '"+fechaInicio+"' and '"+fechafin+"'");
+            ps = cn.prepareStatement("SELECT * FROM Ventas WHERE FechaVenta BETWEEN '" + fechaInicio + "' and '" + fechafin + "'");
             rs = ps.executeQuery();
 
             while (rs.next()) {
@@ -160,13 +168,16 @@ public class Imprimir extends javax.swing.JInternalFrame {
         Date fe = fechaInicial.getDate();
         long fec = fe.getTime();
         java.sql.Date fee = new java.sql.Date(fec);
+        Date jDF = fechaFinal.getDate();
+        long long_fechaF = jDF.getTime();
+        java.sql.Date fechafin = new java.sql.Date(long_fechaF);
         try {
 
             File carpetaHaGuardar = new File("C:\\backupsistem\\Ventas");
             if (!carpetaHaGuardar.exists()) {
                 carpetaHaGuardar.mkdirs();
             }
-            OutputStream file = new FileOutputStream(new File(carpetaHaGuardar.getAbsoluteFile() + "\\" + fee + ".pdf"));
+            OutputStream file = new FileOutputStream(new File(carpetaHaGuardar.getAbsoluteFile() + "\\" + fee + "--" + fechafin + ".pdf"));
             Document document = new Document();
 
             Image Imagen = Image.getInstance(this.getClass().getResource("/img/logopx.png"));
@@ -259,7 +270,7 @@ public class Imprimir extends javax.swing.JInternalFrame {
         }
 
         try {
-            File file = new File("C:\\backupsistem\\Ventas\\" + fee + ".pdf");
+            File file = new File("C:\\backupsistem\\Ventas\\" + fee + "--" + fechafin + ".pdf");
             Desktop.getDesktop().open(file);
         } catch (Exception e) {
             e.printStackTrace();
@@ -294,9 +305,9 @@ public class Imprimir extends javax.swing.JInternalFrame {
     private void initComponents() {
 
         btnBuscar = new javax.swing.JPanel();
-        Bustxt = new javax.swing.JLabel();
+        txtBuscar = new javax.swing.JLabel();
         btnImprimir = new javax.swing.JPanel();
-        Imptxt = new javax.swing.JLabel();
+        txtImprimir = new javax.swing.JLabel();
         jScrollPane1 = new javax.swing.JScrollPane();
         tablaVentas = new javax.swing.JTable();
         txtTotal = new javax.swing.JTextField();
@@ -309,6 +320,10 @@ public class Imprimir extends javax.swing.JInternalFrame {
         jLabel6 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         fechaFinal = new com.toedter.calendar.JDateChooser();
+        btnGraficarVentas = new javax.swing.JPanel();
+        txtGraficarVentas = new javax.swing.JLabel();
+        chkProductosVendidos = new javax.swing.JCheckBox();
+        chkVentas = new javax.swing.JCheckBox();
 
         setBackground(new java.awt.Color(255, 255, 255));
 
@@ -325,9 +340,9 @@ public class Imprimir extends javax.swing.JInternalFrame {
             }
         });
 
-        Bustxt.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
-        Bustxt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Bustxt.setText("Buscar");
+        txtBuscar.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
+        txtBuscar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtBuscar.setText("Buscar");
 
         javax.swing.GroupLayout btnBuscarLayout = new javax.swing.GroupLayout(btnBuscar);
         btnBuscar.setLayout(btnBuscarLayout);
@@ -335,12 +350,12 @@ public class Imprimir extends javax.swing.JInternalFrame {
             btnBuscarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnBuscarLayout.createSequentialGroup()
                 .addGap(20, 20, 20)
-                .addComponent(Bustxt)
+                .addComponent(txtBuscar)
                 .addContainerGap(19, Short.MAX_VALUE))
         );
         btnBuscarLayout.setVerticalGroup(
             btnBuscarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Bustxt, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+            .addComponent(txtBuscar, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
         );
 
         btnImprimir.setBackground(new java.awt.Color(255, 255, 255));
@@ -356,9 +371,9 @@ public class Imprimir extends javax.swing.JInternalFrame {
             }
         });
 
-        Imptxt.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
-        Imptxt.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        Imptxt.setText("Imprimir");
+        txtImprimir.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
+        txtImprimir.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtImprimir.setText("Imprimir");
 
         javax.swing.GroupLayout btnImprimirLayout = new javax.swing.GroupLayout(btnImprimir);
         btnImprimir.setLayout(btnImprimirLayout);
@@ -366,12 +381,12 @@ public class Imprimir extends javax.swing.JInternalFrame {
             btnImprimirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(btnImprimirLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(Imptxt)
+                .addComponent(txtImprimir)
                 .addContainerGap(13, Short.MAX_VALUE))
         );
         btnImprimirLayout.setVerticalGroup(
             btnImprimirLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(Imptxt, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+            .addComponent(txtImprimir, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
         );
 
         tablaVentas.setFont(new java.awt.Font("Times New Roman", 1, 14)); // NOI18N
@@ -474,6 +489,43 @@ public class Imprimir extends javax.swing.JInternalFrame {
         fechaFinal.setDateFormatString("yyyy-MM-dd");
         fechaFinal.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
 
+        btnGraficarVentas.setBackground(new java.awt.Color(255, 255, 255));
+        btnGraficarVentas.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGraficarVentasMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnGraficarVentasMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnGraficarVentasMouseExited(evt);
+            }
+        });
+
+        txtGraficarVentas.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
+        txtGraficarVentas.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtGraficarVentas.setText("Graficar");
+
+        javax.swing.GroupLayout btnGraficarVentasLayout = new javax.swing.GroupLayout(btnGraficarVentas);
+        btnGraficarVentas.setLayout(btnGraficarVentasLayout);
+        btnGraficarVentasLayout.setHorizontalGroup(
+            btnGraficarVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(btnGraficarVentasLayout.createSequentialGroup()
+                .addGap(20, 20, 20)
+                .addComponent(txtGraficarVentas)
+                .addContainerGap(19, Short.MAX_VALUE))
+        );
+        btnGraficarVentasLayout.setVerticalGroup(
+            btnGraficarVentasLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtGraficarVentas, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+        );
+
+        chkProductosVendidos.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
+        chkProductosVendidos.setText("Productos más Vendidos");
+
+        chkVentas.setFont(new java.awt.Font("Times New Roman", 3, 13)); // NOI18N
+        chkVentas.setText("Ventas");
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -481,27 +533,10 @@ public class Imprimir extends javax.swing.JInternalFrame {
             .addGroup(layout.createSequentialGroup()
                 .addGap(4, 4, 4)
                 .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 685, Short.MAX_VALUE)
-                        .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(layout.createSequentialGroup()
-                        .addGap(279, 279, 279)
-                        .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 0, Short.MAX_VALUE))))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(146, 146, 146)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.Alignment.LEADING))
-                .addContainerGap())
+                .addGap(279, 279, 279)
+                .addComponent(jLabel2, javax.swing.GroupLayout.PREFERRED_SIZE, 129, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 34, javax.swing.GroupLayout.PREFERRED_SIZE))
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -510,6 +545,25 @@ public class Imprimir extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27))
+            .addGroup(layout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkVentas)
+                        .addGap(0, 0, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(chkProductosVendidos)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(btnGraficarVentas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(36, 36, 36)
+                        .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(146, 146, 146)
+                        .addComponent(jLabel3)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, 100, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
+                    .addComponent(jScrollPane1))
+                .addContainerGap())
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -519,10 +573,11 @@ public class Imprimir extends javax.swing.JInternalFrame {
                         .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addGap(45, 45, 45))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 43, Short.MAX_VALUE)
+                        .addGap(23, 23, 23)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                            .addComponent(jLabel2)
+                            .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 21, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 45, Short.MAX_VALUE)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
@@ -535,29 +590,34 @@ public class Imprimir extends javax.swing.JInternalFrame {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 170, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                        .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(jLabel3))
-                    .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(txtTotal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(jLabel3))
+                        .addComponent(btnImprimir, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addComponent(btnGraficarVentas, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(chkProductosVendidos))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(chkVentas)
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void btnBuscarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseClicked
-        cargarTablaClientesPlanes("");
-        cargarTablaVentas("");
+        cargarTablaClientesPlanes();
+        cargarTablaVentas();
     }//GEN-LAST:event_btnBuscarMouseClicked
 
     private void btnBuscarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseEntered
-        Bustxt.setForeground(new Color(255, 255, 255));
+        txtBuscar.setForeground(new Color(255, 255, 255));
         btnBuscar.setBackground(new Color(0, 153, 255));
     }//GEN-LAST:event_btnBuscarMouseEntered
 
     private void btnBuscarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnBuscarMouseExited
-        Bustxt.setForeground(new Color(0, 0, 0));
+        txtBuscar.setForeground(new Color(0, 0, 0));
         btnBuscar.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_btnBuscarMouseExited
 
@@ -572,22 +632,23 @@ public class Imprimir extends javax.swing.JInternalFrame {
     }//GEN-LAST:event_btnImprimirMouseClicked
 
     private void btnImprimirMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnImprimirMouseEntered
-        Imptxt.setForeground(new Color(255, 255, 255));
+        txtImprimir.setForeground(new Color(255, 255, 255));
         btnImprimir.setBackground(new Color(0, 153, 255));
     }//GEN-LAST:event_btnImprimirMouseEntered
 
     private void btnImprimirMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnImprimirMouseExited
-        Imptxt.setForeground(new Color(0, 0, 0));
+        txtImprimir.setForeground(new Color(0, 0, 0));
         btnImprimir.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_btnImprimirMouseExited
 
     private void cerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cerrarMouseClicked
+      
         dispose();
         Color cl = new Color(0, 117, 155);
         PanelControl.setBackground(cl);
-
         IconControl.setIcon(null);
         PanelControl.setEnabled(true);
+        
     }//GEN-LAST:event_cerrarMouseClicked
 
     private void cerrarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cerrarMouseEntered
@@ -612,23 +673,45 @@ public class Imprimir extends javax.swing.JInternalFrame {
     private void btnVenMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnVenMouseExited
         btnVen.setBackground(new Color(255, 255, 255));
     }//GEN-LAST:event_btnVenMouseExited
-    void centrarVentana(JInternalFrame frame) {
 
+    private void btnGraficarVentasMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarVentasMouseClicked
+        java.sql.Date fechaInicio = MetodosGraficar.getFecha(fechaInicial);
+        java.sql.Date fechafin = MetodosGraficar.getFecha(fechaFinal);
+        if (chkProductosVendidos.isSelected() == true) {
+            MetodosGraficar.productosMasVendidos(fechaInicio, fechafin);
+        }
+        if (chkVentas.isSelected() == true) {
+            MetodosGraficar.graficaBarras(fechaInicio, fechafin);
+        }
+    }//GEN-LAST:event_btnGraficarVentasMouseClicked
+
+    
+    private void btnGraficarVentasMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarVentasMouseEntered
+        txtGraficarVentas.setForeground(new Color(255, 255, 255));
+        btnGraficarVentas.setBackground(new Color(9, 124, 247));
+    }//GEN-LAST:event_btnGraficarVentasMouseEntered
+
+    private void btnGraficarVentasMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarVentasMouseExited
+        txtGraficarVentas.setForeground(new Color(0, 0, 0));
+        btnGraficarVentas.setBackground(new Color(255, 255, 255));
+    }//GEN-LAST:event_btnGraficarVentasMouseExited
+
+    void centrarVentana(JInternalFrame frame) {
         Menu1.add(frame);
         Dimension dimension = Menu1.getSize();
         Dimension Dframe = frame.getSize();
         frame.setLocation((dimension.width - Dframe.width) / 2, (dimension.height - Dframe.height));
         frame.show();
-
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JLabel Bustxt;
-    private javax.swing.JLabel Imptxt;
     private javax.swing.JPanel btnBuscar;
+    private javax.swing.JPanel btnGraficarVentas;
     private javax.swing.JPanel btnImprimir;
     private javax.swing.JPanel btnVen;
     public static javax.swing.JLabel cerrar;
+    private javax.swing.JCheckBox chkProductosVendidos;
+    private javax.swing.JCheckBox chkVentas;
     private com.toedter.calendar.JDateChooser fechaFinal;
     private com.toedter.calendar.JDateChooser fechaInicial;
     private javax.swing.JLabel jLabel2;
@@ -638,6 +721,9 @@ public class Imprimir extends javax.swing.JInternalFrame {
     private javax.swing.JScrollPane jScrollPane2;
     public static javax.swing.JTable tablaClientesPlan;
     public static javax.swing.JTable tablaVentas;
+    private javax.swing.JLabel txtBuscar;
+    private javax.swing.JLabel txtGraficarVentas;
+    private javax.swing.JLabel txtImprimir;
     private javax.swing.JTextField txtTotal;
     // End of variables declaration//GEN-END:variables
 }

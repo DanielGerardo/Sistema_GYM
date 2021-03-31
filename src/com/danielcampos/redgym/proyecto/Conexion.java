@@ -17,7 +17,7 @@ public class Conexion {
        
        try{
            Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver");
-        acceso = DriverManager.getConnection("jdbc:sqlserver://localhost;databaseName=GYM;user=da;password=1234;");
+        acceso = DriverManager.getConnection("jdbc:sqlserver://localhost;databaseName=GYM;user=;password=;");
         
        }catch (ClassNotFoundException | SQLException ex){
             System.out.println("Error de conexion");

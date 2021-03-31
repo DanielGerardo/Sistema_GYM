@@ -37,7 +37,7 @@ import static com.danielcampos.redgym.proyecto.Menu.PanelControl;
  * 
  * 
  */
-public class EntradasYSalidas extends javax.swing.JInternalFrame {
+public class EntradasYSalidas extends javax.swing.JInternalFrame implements MetodosGraficar{
 
     public static String fechaActual(){
 Date fecha = new Date();
@@ -67,9 +67,8 @@ return formatofecha.format(fecha);
         
     }  
     void cargarTablaEntradasYSalidas(){
-        Date fe=calen.getDate();
-        long fec=fe.getTime();
-        java.sql.Date fee=new java.sql.Date(fec);
+        java.sql.Date fechaInicio = MetodosGraficar.getFecha(fechaInicial);        
+        java.sql.Date fechafin = MetodosGraficar.getFecha(fechaFinal);
         Color myColor = new Color(255,255,255);
         
         tablaEntradasYSalidas.setBackground(myColor);
@@ -78,7 +77,7 @@ return formatofecha.format(fecha);
         tablaEntradasYSalidas.getTableHeader().setForeground(new Color(255,255,255));
         tablaEntradasYSalidas.getTableHeader().setOpaque(false);
         tablaEntradasYSalidas.getTableHeader().setEnabled(false);
-       String[] titulos = {"User","Nombre","Entrada","Salida"};
+       String[] titulos = {"User","Nombre","Entrada","Salida","Fecha"};
         
         model = new DefaultTableModel(null, titulos);
         Conexion cc = new Conexion();
@@ -88,8 +87,8 @@ return formatofecha.format(fecha);
         ResultSetMetaData rsmd;
         int colu;
         try {
-             ps = cn.prepareStatement("SELECT UserName,nombre,horaEntrada,horaSalida FROM Entradas WHERE fechahoy=?");
-            ps.setDate(1, fee);
+             ps = cn.prepareStatement("SELECT UserName,nombre,horaEntrada,horaSalida,fechahoy FROM Entradas WHERE fechahoy BETWEEN '" + fechaInicio + "' and '" + fechafin + "'");
+            
             rs = ps.executeQuery();
             rsmd = rs.getMetaData();
             colu = rsmd.getColumnCount();
@@ -122,7 +121,7 @@ return formatofecha.format(fecha);
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
         jLabel3 = new javax.swing.JLabel();
-        calen = new com.toedter.calendar.JDateChooser();
+        fechaInicial = new com.toedter.calendar.JDateChooser();
         cerrar = new javax.swing.JLabel();
         btnBuscar = new javax.swing.JPanel();
         jLabel4 = new javax.swing.JLabel();
@@ -133,6 +132,9 @@ return formatofecha.format(fecha);
         jLabel7 = new javax.swing.JLabel();
         jScrollPane2 = new javax.swing.JScrollPane();
         tablaEntradasYSalidas = new javax.swing.JTable();
+        fechaFinal = new com.toedter.calendar.JDateChooser();
+        btnGraficar = new javax.swing.JPanel();
+        txtGraficar = new javax.swing.JLabel();
 
         setBackground(new java.awt.Color(255, 255, 255));
         setBorder(null);
@@ -181,13 +183,13 @@ return formatofecha.format(fecha);
         jLabel3.setFont(new java.awt.Font("Tahoma", 3, 12)); // NOI18N
         jLabel3.setText("Direccion:");
 
-        calen.setBackground(new java.awt.Color(255, 255, 255));
-        calen.setForeground(new java.awt.Color(255, 255, 255));
-        calen.setDateFormatString("yyyy-MM-dd");
-        calen.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
-        calen.addMouseListener(new java.awt.event.MouseAdapter() {
+        fechaInicial.setBackground(new java.awt.Color(255, 255, 255));
+        fechaInicial.setForeground(new java.awt.Color(255, 255, 255));
+        fechaInicial.setDateFormatString("yyyy-MM-dd");
+        fechaInicial.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
+        fechaInicial.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
-                calenMouseClicked(evt);
+                fechaInicialMouseClicked(evt);
             }
         });
 
@@ -321,12 +323,54 @@ return formatofecha.format(fecha);
         });
         jScrollPane2.setViewportView(tablaEntradasYSalidas);
 
+        fechaFinal.setBackground(new java.awt.Color(255, 255, 255));
+        fechaFinal.setForeground(new java.awt.Color(255, 255, 255));
+        fechaFinal.setDateFormatString("yyyy-MM-dd");
+        fechaFinal.setFont(new java.awt.Font("Tahoma", 3, 11)); // NOI18N
+        fechaFinal.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                fechaFinalMouseClicked(evt);
+            }
+        });
+
+        btnGraficar.setBackground(new java.awt.Color(102, 204, 255));
+        btnGraficar.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                btnGraficarMouseClicked(evt);
+            }
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                btnGraficarMouseEntered(evt);
+            }
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                btnGraficarMouseExited(evt);
+            }
+        });
+
+        txtGraficar.setFont(new java.awt.Font("Times New Roman", 3, 12)); // NOI18N
+        txtGraficar.setForeground(new java.awt.Color(255, 255, 255));
+        txtGraficar.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        txtGraficar.setText("Graficar");
+
+        javax.swing.GroupLayout btnGraficarLayout = new javax.swing.GroupLayout(btnGraficar);
+        btnGraficar.setLayout(btnGraficarLayout);
+        btnGraficarLayout.setHorizontalGroup(
+            btnGraficarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, btnGraficarLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(txtGraficar, javax.swing.GroupLayout.DEFAULT_SIZE, 46, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        btnGraficarLayout.setVerticalGroup(
+            btnGraficarLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(txtGraficar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 20, Short.MAX_VALUE)
+        );
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jScrollPane2)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(foto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -340,20 +384,24 @@ return formatofecha.format(fecha);
                             .addComponent(jLabel3, javax.swing.GroupLayout.PREFERRED_SIZE, 64, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addComponent(txtDire, javax.swing.GroupLayout.PREFERRED_SIZE, 220, javax.swing.GroupLayout.PREFERRED_SIZE)))
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
                 .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(282, 282, 282)
                 .addComponent(jLabel5)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnVen1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-            .addGroup(layout.createSequentialGroup()
-                .addGap(539, 539, 539)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(cerrar, javax.swing.GroupLayout.PREFERRED_SIZE, 16, javax.swing.GroupLayout.PREFERRED_SIZE))
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(45, 45, 45)
+                .addComponent(btnGraficar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(calen, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 34, Short.MAX_VALUE))
+                .addComponent(fechaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, 106, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(29, 29, 29))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -364,16 +412,19 @@ return formatofecha.format(fecha);
                         .addGap(19, 19, 19)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addComponent(btnVen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                            .addComponent(btnVen1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addGap(26, 26, 26)
-                        .addComponent(calen, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(btnVen1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                     .addGroup(layout.createSequentialGroup()
                         .addGap(5, 5, 5)
-                        .addComponent(jLabel5))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(btnBuscar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
-                .addGap(10, 10, 10)
+                        .addComponent(jLabel5)))
+                .addGap(25, 25, 25)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(fechaInicial, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                            .addComponent(btnBuscar, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(fechaFinal, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(btnGraficar, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
                         .addComponent(foto, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -397,9 +448,9 @@ return formatofecha.format(fecha);
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    private void calenMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_calenMouseClicked
+    private void fechaInicialMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fechaInicialMouseClicked
         
-    }//GEN-LAST:event_calenMouseClicked
+    }//GEN-LAST:event_fechaInicialMouseClicked
 
     private void cerrarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_cerrarMouseClicked
         dispose();
@@ -491,13 +542,33 @@ return formatofecha.format(fecha);
         cerrar.setForeground(Color.BLACK);
     }//GEN-LAST:event_cerrarMouseExited
 
+    private void fechaFinalMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_fechaFinalMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_fechaFinalMouseClicked
+
+    private void btnGraficarMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarMouseClicked
+        java.sql.Date fechaInicio = MetodosGraficar.getFecha(fechaInicial);        
+        java.sql.Date fechafin = MetodosGraficar.getFecha(fechaFinal);
+        MetodosGraficar.graficaBarrasEntrasYSalidas(fechaInicio, fechafin);
+    }//GEN-LAST:event_btnGraficarMouseClicked
+
+    private void btnGraficarMouseEntered(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarMouseEntered
+        btnGraficar.setBackground(new java.awt.Color(0,102,204));
+    }//GEN-LAST:event_btnGraficarMouseEntered
+
+    private void btnGraficarMouseExited(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_btnGraficarMouseExited
+        btnGraficar.setBackground(new java.awt.Color(102, 204, 255));
+    }//GEN-LAST:event_btnGraficarMouseExited
+
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel btnBuscar;
+    private javax.swing.JPanel btnGraficar;
     private javax.swing.JPanel btnVen;
     private javax.swing.JPanel btnVen1;
-    private com.toedter.calendar.JDateChooser calen;
     private javax.swing.JLabel cerrar;
+    private com.toedter.calendar.JDateChooser fechaFinal;
+    private com.toedter.calendar.JDateChooser fechaInicial;
     private JPanelWebCam.JPanelWebCam foto;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
@@ -509,6 +580,7 @@ return formatofecha.format(fecha);
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JTable tablaEntradasYSalidas;
     private javax.swing.JTextField txtDire;
+    private javax.swing.JLabel txtGraficar;
     private javax.swing.JTextField txtTel;
     private javax.swing.JTextField txtTelA;
     // End of variables declaration//GEN-END:variables
