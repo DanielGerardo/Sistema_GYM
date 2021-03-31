@@ -245,7 +245,7 @@ public class Login extends javax.swing.JFrame {
        String Pass = txtPass.getText();
        if(txtUser.getText().equals("")||txtPass.getText().equals("")){
         JOptionPane.showMessageDialog(this,"Debe de ingresar datos");
-        txtUser.requestFocus();} if(txtUser.getText().equals("akoleni")&&txtPass.getText().equals("xdgta5dak")){
+        txtUser.requestFocus();} if(txtUser.getText().equals("campos")&&txtPass.getText().equals("123456")){
                 Menu m =new Menu();
                 m.setVisible(true);
                 dispose();
