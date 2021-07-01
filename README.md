@@ -6,4 +6,4 @@ Sistema personalizado para el control de entradas y salidas de clientes de un gi
 4. Agregar la base de datos .dak
 5. Crear un Usuario para conectarnos a la BD
 6. Ir a la clase "Conexion" y agregamos el nuevo usuario y la contraseña de la BD
-7. Usuario: danielcampos Contraseña: 123456 del sistema
+7. Usuario: danielcampos Contraseña: 12345678 del sistema
